@@ -80,7 +80,7 @@ function App() {
       dataField: 'total_securities',
       text: 'TS = D-F-G-I-P',
       sort: true,
-      formatter: (row, cell) => <TotalStock row={row} cell={cell} />
+      formatter: (cell, row) => <TotalStock row={row} cell={cell} />
     }
   ];
 

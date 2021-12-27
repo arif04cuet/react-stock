@@ -2,8 +2,8 @@ import React from 'react'
 
 const TotalStock = ({ row, cell }) => {
 
-    console.log(cell);
-    if (!Boolean(cell))
+
+    if (!cell)
         return;
 
     const total = cell.split('|')
