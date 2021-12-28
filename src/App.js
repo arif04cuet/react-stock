@@ -1,13 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
 import { useEffect, useState } from 'react';
 
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
+import filterFactory, { numberFilter, selectFilter, textFilter, Comparator } from 'react-bootstrap-table2-filter';
+
 import BootstrapTable from 'react-bootstrap-table-next';
-import TotalStock from './TotalStock';
 import ExpandedRow from './ExpandedRow';
 
 function App() {
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [instruments, setInstruments] = useState([])
   const [fundamentals, setFundamentals] = useState([])
@@ -22,12 +24,10 @@ function App() {
 
     const items = [];
 
-
     Object.keys(instruments).forEach(code => {
 
       const fundamental = fundamentals[code];
       const instrument = instruments[code];
-      console.log(fundamental);
       const item = {
         code: code,
         category: instrument.category,
@@ -53,55 +53,88 @@ function App() {
     const instrumentApi = apiBase + '/instruments';
     const sectorApi = apiBase + '/sectors';
 
-    let response;
+    fetch(instrumentApi)
+      .then(res => res.json())
+      .then(res => {
+        setInstruments(res)
+        fetch(fundamentalApi)
+          .then(res => res.json())
+          .then(res => {
+            setFundamentals(res);
+            fetch(sectorApi)
+              .then(res => res.json())
+              .then(res => {
+                setSectors(res);
+                setIsLoading(false);
+              })
+          })
 
-    response = await fetch(instrumentApi);
-    const instrumentsData = await response.json();
-    setInstruments(instrumentsData);
+      });
 
-    response = await fetch(fundamentalApi);
-    const fundamentalsData = await response.json();
-    setFundamentals(fundamentalsData);
-
-    response = await fetch(sectorApi);
-    const sectorsData = await response.json();
-    setSectors(sectorsData);
-
-
-    formatItems();
   }
 
+  let codeF, pucF;
+
   useEffect(() => {
-
-    fectStockData()
-
-  }, [])
+    if (isLoading)
+      fectStockData()
+    else
+      formatItems();
+  }, [isLoading])
 
   const columns = [
     {
       dataField: 'code',
       text: 'Code',
-      sort: true
+      sort: true,
+      filter: textFilter({
+        getFilter: (filter) => {
+          codeF = filter;
+        }
+      })
     },
     {
       dataField: 'category',
       text: 'Category',
-      sort: true
+      sort: true,
+      filter: selectFilter({
+        options: {
+          'A': 'A',
+          'B': 'B',
+          'N': 'N',
+          'Z': 'Z'
+        }
+      })
     },
     {
       dataField: 'paid_up_capital',
       text: 'PUC',
-      sort: true
+      sort: true,
+      filter: numberFilter({
+        getFilter: (filter) => {
+          pucF = filter;
+        }
+      })
     },
     {
       dataField: 'earning_per_share',
       text: 'EPS',
-      sort: true
+      sort: true,
+      filter: numberFilter({
+        getFilter: (filter) => {
+
+        }
+      })
     },
     {
       dataField: 'net_asset_val_per_share',
       text: 'NAV',
-      sort: true
+      sort: true,
+      filter: numberFilter({
+        getFilter: (filter) => {
+
+        }
+      })
     },
     {
       dataField: 'reserve_and_surp',
@@ -125,6 +158,17 @@ function App() {
     <div className="container">
       <div className="row">
         <div className="col">
+          <div>
+            <button
+              className="btn btn-danger"
+              onClick={e => {
+                console.log(typeof codeF);
+                codeF('')
+                pucF('')
+              }}>
+              Clear
+            </button>
+          </div>
           <BootstrapTable
             keyField='code'
             data={stocks}
@@ -133,6 +177,8 @@ function App() {
             hover
             condensed
             expandRow={expandRow}
+            noDataIndication="Loading.."
+            filter={filterFactory()}
           />
         </div>
       </div>
