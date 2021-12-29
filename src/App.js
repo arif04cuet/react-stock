@@ -31,11 +31,11 @@ function App() {
       const item = {
         code: code,
         category: instrument.category,
-        paid_up_capital: getMeta(fundamental, 'paid_up_capital'),
-        earning_per_share: getMeta(fundamental, 'earning_per_share'),
-        net_asset_val_per_share: getMeta(fundamental, 'net_asset_val_per_share'),
-        reserve_and_surp: getMeta(fundamental, 'reserve_and_surp'),
-        total_securities: getMeta(fundamental, 'total_no_securities')
+        paid_up_capital: Number(getMeta(fundamental, 'paid_up_capital')),
+        earning_per_share: Number(getMeta(fundamental, 'earning_per_share')),
+        net_asset_val_per_share: Number(getMeta(fundamental, 'net_asset_val_per_share')),
+        reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
+        total_securities: Number(getMeta(fundamental, 'total_no_securities'))
       }
 
       items.push(item);
