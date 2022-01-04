@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
+
 import filterFactory, { numberFilter, selectFilter, textFilter, Comparator } from 'react-bootstrap-table2-filter';
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -35,7 +35,9 @@ function App() {
         earning_per_share: Number(getMeta(fundamental, 'earning_per_share')),
         net_asset_val_per_share: Number(getMeta(fundamental, 'net_asset_val_per_share')),
         reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
-        total_securities: Number(getMeta(fundamental, 'total_no_securities'))
+        total_securities: Number(getMeta(fundamental, 'total_no_securities')),
+        share_percentage_govt: Number(getMeta(fundamental, 'share_percentage_govt')),
+        share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute'))
       }
 
       items.push(item);
@@ -110,31 +112,19 @@ function App() {
       dataField: 'paid_up_capital',
       text: 'PUC',
       sort: true,
-      filter: numberFilter({
-        getFilter: (filter) => {
-          pucF = filter;
-        }
-      })
+      filter: numberFilter()
     },
     {
       dataField: 'earning_per_share',
       text: 'EPS',
       sort: true,
-      filter: numberFilter({
-        getFilter: (filter) => {
-
-        }
-      })
+      filter: numberFilter()
     },
     {
       dataField: 'net_asset_val_per_share',
       text: 'NAV',
       sort: true,
-      filter: numberFilter({
-        getFilter: (filter) => {
-
-        }
-      })
+      filter: numberFilter()
     },
     {
       dataField: 'reserve_and_surp',
@@ -145,6 +135,18 @@ function App() {
       dataField: 'total_securities',
       text: 'TS',
       sort: true
+    },
+    {
+      dataField: 'share_percentage_govt',
+      text: 'Govt %',
+      sort: true,
+      filter: numberFilter()
+    },
+    {
+      dataField: 'share_percentage_institute',
+      text: 'Institute %',
+      sort: true,
+      filter: numberFilter()
     }
   ];
 

@@ -1,0 +1,15 @@
+[debug] [2021-12-29T15:35:15.910Z] ----------------------------------------------------------------------
+[debug] [2021-12-29T15:35:15.913Z] Command:       /usr/bin/node /usr/bin/firebase deploy
+[debug] [2021-12-29T15:35:15.913Z] CLI Version:   10.0.1
+[debug] [2021-12-29T15:35:15.913Z] Platform:      linux
+[debug] [2021-12-29T15:35:15.913Z] Node Version:  v14.18.0
+[debug] [2021-12-29T15:35:15.914Z] Time:          Wed Dec 29 2021 21:35:15 GMT+0600 (Bangladesh Standard Time)
+[debug] [2021-12-29T15:35:15.914Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-12-29T15:35:15.916Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2021-12-29T15:35:15.982Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-12-29T15:35:15.982Z] > authorizing via signed-in user (arif04cuet@gmail.com)
+[debug] [2021-12-29T15:35:15.982Z] [iam] checking project my-stock-e866c for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2021-12-29T15:35:15.984Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2021-12-29T15:35:15.984Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
