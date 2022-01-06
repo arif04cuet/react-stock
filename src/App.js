@@ -28,6 +28,7 @@ function App() {
 
       const fundamental = fundamentals[code];
       const instrument = instruments[code];
+
       const item = {
         code: code,
         category: instrument.category,
@@ -37,7 +38,11 @@ function App() {
         reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
         total_securities: Number(getMeta(fundamental, 'total_no_securities')),
         share_percentage_govt: Number(getMeta(fundamental, 'share_percentage_govt')),
-        share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute'))
+        share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute')),
+        close_price: Number(instrument?.close),
+        yearly_high: Number(instrument?.yearly_high),
+        yearly_low: Number(instrument?.yearly_low),
+        p_yl: Number((Number(instrument?.close) - Number(instrument?.yearly_low)).toFixed(2)),
       }
 
       items.push(item);
@@ -147,6 +152,30 @@ function App() {
       text: 'Institute %',
       sort: true,
       filter: numberFilter()
+    },
+    {
+      dataField: 'close_price',
+      text: 'Price',
+      sort: true,
+      filter: numberFilter()
+    },
+    {
+      dataField: 'yearly_high',
+      text: 'YH',
+      sort: true,
+      filter: numberFilter()
+    },
+    {
+      dataField: 'yearly_low',
+      text: 'YL',
+      sort: true,
+      filter: numberFilter()
+    },
+    {
+      dataField: 'p_yl',
+      text: 'P vs YL',
+      sort: true,
+      filter: numberFilter()
     }
   ];
 
@@ -157,7 +186,7 @@ function App() {
 
 
   return (
-    <div className="container">
+    <div className="container-fluid">
       <div className="row">
         <div className="col">
           <div>
@@ -181,6 +210,7 @@ function App() {
             expandRow={expandRow}
             noDataIndication="Loading.."
             filter={filterFactory()}
+            wrapperClasses="table-responsive"
           />
         </div>
       </div>
