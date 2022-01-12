@@ -6,6 +6,8 @@ import filterFactory, { numberFilter, selectFilter, textFilter, Comparator } fro
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import ExpandedRow from './ExpandedRow';
+import { Spinner } from 'react-bootstrap';
+import TableCaption from './TableCaption';
 
 function App() {
 
@@ -43,6 +45,7 @@ function App() {
         yearly_high: Number(instrument?.yearly_high),
         yearly_low: Number(instrument?.yearly_low),
         p_yl: Number((Number(instrument?.close) - Number(instrument?.yearly_low)).toFixed(2)),
+        year_end: (getMeta(fundamental, 'year_end') + '').includes('-31') ? 1 : 2
       }
 
       items.push(item);
@@ -89,6 +92,10 @@ function App() {
       formatItems();
   }, [isLoading])
 
+  const endYearOptions = {
+    1: 'Dec 31',
+    2: 'June 30'
+  }
   const columns = [
     {
       dataField: 'code',
@@ -176,6 +183,15 @@ function App() {
       text: 'P vs YL',
       sort: true,
       filter: numberFilter()
+    },
+    {
+      dataField: 'year_end',
+      text: 'Year End',
+      sort: true,
+      formatter: cell => endYearOptions[cell],
+      filter: selectFilter({
+        options: endYearOptions
+      })
     }
   ];
 
@@ -185,21 +201,21 @@ function App() {
   };
 
 
+
+  if (isLoading)
+    return (
+      <div class="text-center">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    )
+
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col">
-          <div>
-            <button
-              className="btn btn-danger"
-              onClick={e => {
-                console.log(typeof codeF);
-                codeF('')
-                pucF('')
-              }}>
-              Clear
-            </button>
-          </div>
+
           <BootstrapTable
             keyField='code'
             data={stocks}
@@ -211,6 +227,7 @@ function App() {
             noDataIndication="Loading.."
             filter={filterFactory()}
             wrapperClasses="table-responsive"
+            caption={<TableCaption items={stocks} />}
           />
         </div>
       </div>
