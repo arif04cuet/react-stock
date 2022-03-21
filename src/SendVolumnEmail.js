@@ -5,8 +5,9 @@ const SendVolumnEmail = () => {
 
     const [instruments, setInstruments] = useState([]);
     const [grouth, setGrouth] = useState([]);
+    const [isEmailSent, setIsEmailSent] = useState(false);
 
-    const MULTIPLIER = 3;
+    const MULTIPLIER = 5;
 
     const send = (html) => {
 
@@ -18,6 +19,7 @@ const SendVolumnEmail = () => {
 
         emailjs.send('service_w8wobhf', 'template_koujb38', templateParams)
             .then(function (response) {
+                setIsEmailSent(true);
                 console.log('SUCCESS!', response.status, response.text);
             }, function (error) {
                 console.log('FAILED...', error);
@@ -45,7 +47,7 @@ const SendVolumnEmail = () => {
             let i = 0;
             for (const stock in instruments) {
 
-                const url = 'https://stocknow.com.bd/api/v1/instruments/' + stock + '/history?resolution=D&additionalField=trade';
+                const url = 'https://stocknow.com.bd/api/v1/instruments/' + stock + '/history?resolution=D';
                 const response = await fetch(url);
                 const volumn = await response.json();
 
@@ -107,7 +109,10 @@ const SendVolumnEmail = () => {
     }, [instruments])
 
     return (
-        <div>SendVolumnEmail</div>
+        <div>
+            {!isEmailSent && 'Working.....'}
+            {isEmailSent && 'Email sent!'}
+        </div>
     )
 }
 

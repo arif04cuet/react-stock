@@ -5,6 +5,7 @@ const SendEmail = () => {
 
     const [instruments, setInstruments] = useState([]);
     const [grouth, setGrouth] = useState([]);
+    const [isEmailSent, setIsEmailSent] = useState(false);
 
     const send = (html) => {
 
@@ -16,6 +17,7 @@ const SendEmail = () => {
 
         emailjs.send('service_w8wobhf', 'template_nuirghb', templateParams)
             .then(function (response) {
+                setIsEmailSent(true);
                 console.log('SUCCESS!', response.status, response.text);
             }, function (error) {
                 console.log('FAILED...', error);
@@ -92,7 +94,10 @@ const SendEmail = () => {
     }, [instruments])
 
     return (
-        <div>SendEmail</div>
+        <div>
+            {!isEmailSent && 'Working.....'}
+            {isEmailSent && 'Email sent!'}
+        </div>
     )
 }
 
