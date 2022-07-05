@@ -9,6 +9,10 @@ import ExpandedRow from './ExpandedRow';
 import { Spinner } from 'react-bootstrap';
 import TableCaption from './TableCaption';
 
+import ToolkitProvider, { ColumnToggle } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
+const { ToggleList } = ColumnToggle;
+
+
 function StockList() {
 
     const [isLoading, setIsLoading] = useState(true);
@@ -34,15 +38,16 @@ function StockList() {
             const item = {
                 code: code,
                 category: instrument.category,
-                paid_up_capital: Number(getMeta(fundamental, 'paid_up_capital')),
+                paid_up_capital: (Number(getMeta(fundamental, 'paid_up_capital')) / 10).toFixed(2),
                 earning_per_share: Number(getMeta(fundamental, 'earning_per_share')),
                 net_asset_val_per_share: Number(getMeta(fundamental, 'net_asset_val_per_share')),
                 reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
-                total_securities: Number(getMeta(fundamental, 'total_no_securities')),
+                total_securities: (Number(getMeta(fundamental, 'total_no_securities')) / 10000000).toFixed(2),
                 share_percentage_govt: Number(getMeta(fundamental, 'share_percentage_govt')),
                 share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute')),
                 close_price: Number(instrument?.close),
                 yearly_high: Number(instrument?.yearly_high),
+                p_yh: Number((Number(instrument?.yearly_high - Number(instrument?.close))).toFixed(2)),
                 yearly_low: Number(instrument?.yearly_low),
                 p_yl: Number((Number(instrument?.close) - Number(instrument?.yearly_low)).toFixed(2)),
                 year_end: (getMeta(fundamental, 'year_end') + '').includes('-31') ? 1 : 2
@@ -83,6 +88,18 @@ function StockList() {
 
     }
 
+    const filterByCode = (filterVal, data) => {
+        if (filterVal) {
+            const codes = filterVal.split(',').map(code => code.toLowerCase());
+            if (codes.length == 1)
+                return data.filter(item => item.code.toLowerCase().includes(filterVal.toLowerCase()));
+            else
+                return data.filter(item => codes.includes(item.code.toLowerCase()));
+
+        }
+        return data;
+    }
+
     let codeF, pucF;
 
     useEffect(() => {
@@ -101,10 +118,11 @@ function StockList() {
             dataField: 'code',
             text: 'Code',
             sort: true,
+            width: "200",
+            formatter: cell => <a target="__blank" href={"https://stocknow.com.bd/favorites?symbol=" + cell}>{cell}</a>,
+            headerStyle: { width: '12%' },
             filter: textFilter({
-                getFilter: (filter) => {
-                    codeF = filter;
-                }
+                onFilter: filterByCode
             })
         },
         {
@@ -122,7 +140,7 @@ function StockList() {
         },
         {
             dataField: 'paid_up_capital',
-            text: 'PUC',
+            text: 'PUC (cr)',
             sort: true,
             filter: numberFilter()
         },
@@ -136,16 +154,19 @@ function StockList() {
             dataField: 'net_asset_val_per_share',
             text: 'NAV',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
             dataField: 'reserve_and_surp',
             text: 'Reserve',
+            hidden: true,
             sort: true
         },
         {
             dataField: 'total_securities',
-            text: 'TS',
+            text: 'TS (cr)',
+            hidden: true,
             sort: true
         },
         {
@@ -173,6 +194,12 @@ function StockList() {
             filter: numberFilter()
         },
         {
+            dataField: 'p_yh',
+            text: 'P vs YH',
+            sort: true,
+            filter: numberFilter()
+        },
+        {
             dataField: 'yearly_low',
             text: 'YL',
             sort: true,
@@ -187,6 +214,7 @@ function StockList() {
         {
             dataField: 'year_end',
             text: 'Year End',
+            hidden: true,
             sort: true,
             formatter: cell => endYearOptions[cell],
             filter: selectFilter({
@@ -204,7 +232,7 @@ function StockList() {
 
     if (isLoading)
         return (
-            <div class="text-center">
+            <div className="text-center" >
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
@@ -215,20 +243,35 @@ function StockList() {
         <div className="container-fluid">
             <div className="row">
                 <div className="col">
-
-                    <BootstrapTable
-                        keyField='code'
+                    <ToolkitProvider
+                        keyField="code"
                         data={stocks}
                         columns={columns}
-                        striped
-                        hover
-                        condensed
-                        expandRow={expandRow}
-                        noDataIndication="Loading.."
-                        filter={filterFactory()}
-                        wrapperClasses="table-responsive"
-                        caption={<TableCaption items={stocks} />}
-                    />
+                        columnToggle
+
+                    >
+                        {
+                            props => (
+                                <>
+                                    <div className="text-center my-2">
+                                        <ToggleList {...props.columnToggleProps} />
+                                    </div>
+                                    <BootstrapTable
+                                        {...props.baseProps}
+                                        striped
+                                        hover
+                                        condensed
+                                        expandRow={expandRow}
+                                        noDataIndication="Loading.."
+                                        filter={filterFactory()}
+                                        wrapperClasses="table-responsive"
+                                        caption={<TableCaption items={stocks} />}
+                                    />
+                                </>
+                            )
+                        }
+                    </ToolkitProvider>
+
                 </div>
             </div>
         </div>
