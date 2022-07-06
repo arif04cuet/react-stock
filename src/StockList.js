@@ -9,8 +9,9 @@ import ExpandedRow from './ExpandedRow';
 import { Spinner } from 'react-bootstrap';
 import TableCaption from './TableCaption';
 
-import ToolkitProvider, { ColumnToggle } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
+import ToolkitProvider, { ColumnToggle, CSVExport } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
 const { ToggleList } = ColumnToggle;
+const { ExportCSVButton } = CSVExport;
 
 
 function StockList() {
@@ -34,12 +35,16 @@ function StockList() {
 
             const fundamental = fundamentals[code];
             const instrument = instruments[code];
+            const eps = Number(getMeta(fundamental, 'q3_nine_months_eps')) + ((Number(getMeta(fundamental, 'q1_eps_cont_op'))
+                + Number(getMeta(fundamental, 'q2_eps_cont_op'))
+                + Number(getMeta(fundamental, 'q3_eps_cont_op'))) / 3);
 
             const item = {
                 code: code,
                 category: instrument.category,
                 paid_up_capital: (Number(getMeta(fundamental, 'paid_up_capital')) / 10).toFixed(2),
-                earning_per_share: Number(getMeta(fundamental, 'earning_per_share')),
+                earning_per_share: eps.toFixed(2),
+                pe: Number((Number(instrument?.close) / eps).toFixed(2)),
                 net_asset_val_per_share: Number(getMeta(fundamental, 'net_asset_val_per_share')),
                 reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
                 total_securities: (Number(getMeta(fundamental, 'total_no_securities')) / 10000000).toFixed(2),
@@ -75,6 +80,7 @@ function StockList() {
                 fetch(fundamentalApi)
                     .then(res => res.json())
                     .then(res => {
+                        console.log(res);
                         setFundamentals(res);
                         fetch(sectorApi)
                             .then(res => res.json())
@@ -151,6 +157,12 @@ function StockList() {
             filter: numberFilter()
         },
         {
+            dataField: 'pe',
+            text: 'PE',
+            sort: true,
+            filter: numberFilter()
+        },
+        {
             dataField: 'net_asset_val_per_share',
             text: 'NAV',
             sort: true,
@@ -173,12 +185,14 @@ function StockList() {
             dataField: 'share_percentage_govt',
             text: 'Govt %',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
             dataField: 'share_percentage_institute',
             text: 'Institute %',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
@@ -191,24 +205,28 @@ function StockList() {
             dataField: 'yearly_high',
             text: 'YH',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
             dataField: 'p_yh',
             text: 'P vs YH',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
             dataField: 'yearly_low',
             text: 'YL',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
             dataField: 'p_yl',
             text: 'P vs YL',
             sort: true,
+            hidden: true,
             filter: numberFilter()
         },
         {
@@ -248,11 +266,14 @@ function StockList() {
                         data={stocks}
                         columns={columns}
                         columnToggle
-
+                        exportCSV={{ onlyExportFiltered: true, exportAll: false }}
                     >
                         {
                             props => (
                                 <>
+                                    <div className="text-center my-2">
+                                        <ExportCSVButton {...props.csvProps}>Export CSV!!</ExportCSVButton>
+                                    </div>
                                     <div className="text-center my-2">
                                         <ToggleList {...props.columnToggleProps} />
                                     </div>
