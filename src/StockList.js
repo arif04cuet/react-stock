@@ -39,26 +39,31 @@ function StockList() {
                 + Number(getMeta(fundamental, 'q2_eps_cont_op'))
                 + Number(getMeta(fundamental, 'q3_eps_cont_op'))) / 3);
 
-            const item = {
-                code: code,
-                category: instrument.category,
-                paid_up_capital: (Number(getMeta(fundamental, 'paid_up_capital')) / 10).toFixed(2),
-                earning_per_share: eps.toFixed(2),
-                pe: Number((Number(instrument?.close) / eps).toFixed(2)),
-                net_asset_val_per_share: Number(getMeta(fundamental, 'net_asset_val_per_share')),
-                reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
-                total_securities: (Number(getMeta(fundamental, 'total_no_securities')) / 10000000).toFixed(2),
-                share_percentage_govt: Number(getMeta(fundamental, 'share_percentage_govt')),
-                share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute')),
-                close_price: Number(instrument?.close),
-                yearly_high: Number(instrument?.yearly_high),
-                p_yh: Number((Number(instrument?.yearly_high - Number(instrument?.close))).toFixed(2)),
-                yearly_low: Number(instrument?.yearly_low),
-                p_yl: Number((Number(instrument?.close) - Number(instrument?.yearly_low)).toFixed(2)),
-                year_end: (getMeta(fundamental, 'year_end') + '').includes('-31') ? 1 : 2
-            }
+            if (instrument.category) {
 
-            items.push(item);
+                const item = {
+                    code: code,
+                    category: instrument.category,
+                    paid_up_capital: (Number(getMeta(fundamental, 'paid_up_capital')) / 10).toFixed(2),
+                    earning_per_share: eps.toFixed(2),
+                    pe: Number((Number(instrument?.close) / eps).toFixed(2)),
+                    net_asset_val_per_share: Number(getMeta(fundamental, 'net_asset_val_per_share')),
+                    reserve_and_surp: Number(getMeta(fundamental, 'reserve_and_surp')),
+                    total_securities: (Number(getMeta(fundamental, 'total_no_securities')) / 10000000).toFixed(2),
+                    share_percentage_govt: Number(getMeta(fundamental, 'share_percentage_govt')),
+                    share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute')),
+                    close_price: Number(instrument?.close),
+                    floor: Number(instrument?.floor),
+                    yearly_high: Number(instrument?.yearly_high),
+                    p_yh: Number((Number(instrument?.yearly_high - Number(instrument?.close))).toFixed(2)),
+                    p_f: Number((Number(instrument?.close - Number(instrument?.floor))).toFixed(2)),
+                    yearly_low: Number(instrument?.yearly_low),
+                    p_yl: Number((Number(instrument?.close) - Number(instrument?.yearly_low)).toFixed(2)),
+                    year_end: (getMeta(fundamental, 'year_end') + '').includes('-31') ? 1 : 2
+                }
+
+                items.push(item);
+            }
 
         });
 
@@ -80,7 +85,6 @@ function StockList() {
                 fetch(fundamentalApi)
                     .then(res => res.json())
                     .then(res => {
-                        console.log(res);
                         setFundamentals(res);
                         fetch(sectorApi)
                             .then(res => res.json())
@@ -202,6 +206,12 @@ function StockList() {
             filter: numberFilter()
         },
         {
+            dataField: 'floor',
+            text: 'Floor',
+            sort: true,
+            filter: numberFilter()
+        },
+        {
             dataField: 'yearly_high',
             text: 'YH',
             sort: true,
@@ -211,6 +221,13 @@ function StockList() {
         {
             dataField: 'p_yh',
             text: 'P vs YH',
+            sort: true,
+            hidden: true,
+            filter: numberFilter()
+        },
+        {
+            dataField: 'p_f',
+            text: 'P vs F',
             sort: true,
             hidden: true,
             filter: numberFilter()
@@ -286,7 +303,7 @@ function StockList() {
                                         noDataIndication="Loading.."
                                         filter={filterFactory()}
                                         wrapperClasses="table-responsive"
-                                        caption={<TableCaption items={stocks} />}
+                                        caption={<TableCaption items={stocks} columns={columns} />}
                                     />
                                 </>
                             )
