@@ -10,6 +10,7 @@ import { Spinner } from 'react-bootstrap';
 import TableCaption from './TableCaption';
 
 import ToolkitProvider, { ColumnToggle, CSVExport } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
+import { selectOptions } from '@testing-library/user-event/dist/select-options';
 const { ToggleList } = ColumnToggle;
 const { ExportCSVButton } = CSVExport;
 
@@ -54,6 +55,7 @@ function StockList() {
                     share_percentage_institute: Number(getMeta(fundamental, 'share_percentage_institute')),
                     close_price: Number(instrument?.close),
                     floor: Number(instrument?.floor),
+                    sector_id: Number(instrument?.sector_id),
                     yearly_high: Number(instrument?.yearly_high),
                     p_yh: Number((Number(instrument?.yearly_high - Number(instrument?.close))).toFixed(2)),
                     p_f: Number((Number(instrument?.close - Number(instrument?.floor))).toFixed(2)),
@@ -91,6 +93,7 @@ function StockList() {
                             .then(res => {
                                 setSectors(res);
                                 setIsLoading(false);
+
                             })
                     })
 
@@ -118,6 +121,13 @@ function StockList() {
         else
             formatItems();
     }, [isLoading])
+    const sectorOptions = {};
+
+    Object.keys(sectors).forEach(function (sector) {
+        let id = sectors[sector].id;
+        let name = sectors[sector].name;
+        sectorOptions[id] = name;
+    });;
 
     const endYearOptions = {
         1: 'Dec 31',
@@ -135,6 +145,16 @@ function StockList() {
                 onFilter: filterByCode
             })
         },
+        {
+            dataField: 'sector_id',
+            text: 'Sector',
+            sort: true,
+            formatter: cell => sectorOptions[cell],
+            filter: selectFilter({
+                options: sectorOptions
+            })
+        },
+
         {
             dataField: 'category',
             text: 'Category',
